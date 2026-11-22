@@ -1,0 +1,29 @@
+# Reference: <https://postmarketos.org/devicepkg>
+maintainer="Simeon <simeon@local>"
+pkgname=device-samsung-gtaba8
+pkgdesc="Samsung Galaxy Tab A8 10.5 (2021)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	android-tools-mkbootimg
+	linux-samsung-gtaba8
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+e6a4342c07d9c25c93bb472aa59ce33249f7ccab70ee75a0c6ff165aabbe419fb2bcd472b3a002eb0a6573a547bcd7b72ebcffa2595c6c5c084142486add8ff9  deviceinfo
+"
