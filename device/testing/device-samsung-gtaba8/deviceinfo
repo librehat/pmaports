@@ -28,7 +28,7 @@ deviceinfo_flash_offset_ramdisk="0x01000000"
 deviceinfo_flash_offset_second="0x00000000"
 deviceinfo_flash_offset_tags="0x00000100"
 deviceinfo_flash_offset_dtb="0x01f00000"
-deviceinfo_kernel_cmdline="console=tty0 console=ttyS1,115200n8 loglevel=7 rdinit=/init panic=0 cma=256M"
+deviceinfo_kernel_cmdline="earlycon=sprd_serial,0x70100000,115200n8 console=tty0 console=ttyS1,115200n8 loglevel=7 rdinit=/init panic=10 clk_ignore_unused pd_ignore_unused cma=256M"
 
 # Partition info
 deviceinfo_partition_size_boot="67108864"
