@@ -1,5 +1,5 @@
 # Reference: <https://postmarketos.org/vendorkernel>
-maintainer="Simeon <simeon@local>"
+maintainer="Simeon Huang <hzwhuang@gmail.com>"
 _flavor="samsung-gtaba8"
 pkgname=linux-$_flavor
 pkgver=7.3.0
@@ -7,13 +7,16 @@ pkgrel=0
 pkgdesc="Linux mainline v7.3 kernel for Samsung Galaxy Tab A8 10.5 (2021)"
 arch="aarch64"
 _carch="arm64"
-url="https://kernel.org"
+url="https://github.com/librehat/linux"
 license="GPL-2.0-only"
-options="!strip !check !tracedeps
+options="
+	!strip
+	!check
+	!tracedeps
 	pmb:cross-native
-	pmb:kconfigcheck-community
 "
 makedepends="
+	bc
 	bison
 	clang
 	elfutils-dev
@@ -31,47 +34,109 @@ makedepends="
 	zstd
 "
 
+_commit="8afc29f500af71882b63ab585a00fec56ad72db1"
 _config="config-$_flavor.$arch"
-case $pkgver in
-	*.*.*)	_kernver=${pkgver%.0};;
-	*.*)	_kernver=$pkgver;;
-esac
 
-builddir="$srcdir/linux-$_kernver"
+builddir="$srcdir/linux-$_commit"
 source="
-	https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-$_kernver.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/librehat/linux/archive/$_commit.tar.gz
 	$_config
+	reloc.S
 "
 
 prepare() {
 	default_prepare
+	if [ -d /mnt/pmbootstrap/source-override ]; then
+		# pmbootstrap --src uses rsync --exclude-from=.gitignore, which ignores
+		# git's '!' negation (!kernel/time/timeconst.bc vs *.bc) and copies
+		# host-built glibc helpers from subdirectory .gitignore paths.
+		cp -a /mnt/pmbootstrap/source-override/kernel/time/timeconst.bc \
+			"$builddir/kernel/time/timeconst.bc"
+		rm -f \
+			"$builddir/arch/arm64/kernel/pi/relacheck" \
+			"$builddir/certs/extract-cert" \
+			"$builddir/drivers/tty/vt/conmakehash" \
+			"$builddir/drivers/video/logo/pnmtologo" \
+			"$builddir/lib/crc/gen_crc32table" \
+			"$builddir/lib/crc/gen_crc64table" \
+			"$builddir/scripts/asn1_compiler" \
+			"$builddir/scripts/basic/fixdep" \
+			"$builddir/scripts/dtc/dtc" \
+			"$builddir/scripts/dtc/fdtoverlay" \
+			"$builddir/scripts/kallsyms" \
+			"$builddir/scripts/kconfig/conf" \
+			"$builddir/scripts/mod/mk_elfconfig" \
+			"$builddir/scripts/mod/modpost" \
+			"$builddir/scripts/selinux/mdp/mdp" \
+			"$builddir/scripts/sorttable" \
+			"$builddir/security/selinux/genheaders" \
+			"$builddir/usr/gen_init_cpio" \
+			"$builddir/usr/initramfs_data.cpio" \
+			"$builddir/usr/initramfs_inc_data"
+	fi
 	cp "$srcdir/config-$_flavor.$arch" .config
 }
 
 build() {
 	unset LDFLAGS
-	make ARCH="$_carch" CC="${CC:-aarch64-linux-gnu-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor"
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" \
+		olddefconfig
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" \
+		Image modules dtbs
+
+	# Prepend 4K 2MB-aligning relocation stub required by SM-X200 LK (0x80080000 -> 0x80200000)
+	"${CROSS_COMPILE}as" "$srcdir/reloc.S" -o "$builddir/reloc.o"
+	"${CROSS_COMPILE}objcopy" -O binary "$builddir/reloc.o" "$builddir/reloc.bin"
+	python3 -c '
+import struct, subprocess, sys
+bdir, nm = sys.argv[1], sys.argv[2]
+stub = bytearray(open(bdir + "/reloc.bin", "rb").read())
+stub += b"\0" * (4096 - len(stub))
+k = bytearray(open(bdir + "/arch/arm64/boot/Image", "rb").read())
+k += b"\0" * ((-len(k)) % 16)
+off = {l.split()[2]: int(l.split()[0], 16) for l in
+       subprocess.check_output([nm, bdir + "/reloc.o"]).decode().splitlines()}
+assert off["payload"] == 4096
+ks = struct.unpack("<Q", k[16:24])[0]
+struct.pack_into("<Q", stub, off["payload_size"], len(k))
+struct.pack_into("<Q", stub, 16, 0x200000 + max(ks, len(k)))
+open(bdir + "/arch/arm64/boot/Image.reloc", "wb").write(stub + k)
+' "$builddir" "${CROSS_COMPILE}nm"
 }
 
 package() {
 	mkdir -p "$pkgdir"/boot
 
-	install -Dm644 "$builddir/arch/$_carch/boot/Image.gz" \
+	install -Dm644 "$builddir/arch/$_carch/boot/Image.reloc" \
 		"$pkgdir/boot/vmlinuz"
 
 	make dtbs_install modules_install \
 		ARCH="$_carch" \
+		CC="${CC:-gcc}" \
 		INSTALL_PATH="$pkgdir"/boot/ \
 		INSTALL_MOD_PATH="$pkgdir/usr" \
 		INSTALL_MOD_STRIP=1 \
 		INSTALL_DTBS_PATH="$pkgdir/boot/dtbs"
 	rm -f "$pkgdir"/usr/lib/modules/*/build "$pkgdir"/usr/lib/modules/*/source
 
+	# Wrap board DTB in an unpadded Android DT table (magic 0xd7b7ab1e) for SM-X200 LK v2 boot.img
+	python3 -c '
+import struct, sys
+p = sys.argv[1]
+dtb = open(p, "rb").read()
+hdr = struct.pack(">8I", 0xd7b7ab1e, 64 + len(dtb), 32, 32, 1, 32, 2048, 0)
+ent = struct.pack(">8I", len(dtb), 64, 0, 0, 0, 0, 0, 0)
+open(p, "wb").write(hdr + ent + dtb)
+' "$pkgdir/boot/dtbs/sprd/ums512-samsung-gtaba8.dtb"
+
 	install -D "$builddir"/include/config/kernel.release \
 		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
 }
 
 sha512sums="
-737c9a09e828d31c2cb3cb43ac4ffdb72b92c5aff4b15e77e5a7ba68a497c403128ee70a8b2de3f90e31871d705a6492d2d747a9d99a538c359394151d605c33  config-samsung-gtaba8.aarch64
+d543e3f031fec710b8d18f074e97a6a4f4db8b746cb750573d43d79caf507c7e6b6f797dbb43ff56c44205761028df67b3daf1e1712ba277b0fc13be9db62ea7  linux-samsung-gtaba8-8afc29f500af71882b63ab585a00fec56ad72db1.tar.gz
+8be8001afcbb7d6f76f4fd7d7f980702b638ad820988b652c0f3c6f7d3019d5fcbc1613dc14af66e6e00130fdb70c7e59bc96d9dce7fb2cc018887f26bf47ac1  config-samsung-gtaba8.aarch64
+0d49a81856db19dec6182a37dd3fbbda92b9769a27ce02b1af7f44c990c29ca8d4057ee7e57d2ed7197d9c8cdfe483d1f9835ed556151f1ffc2bd6ebc0182666  reloc.S
 "
