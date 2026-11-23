@@ -1,20 +1,25 @@
 # Reference: <https://postmarketos.org/devicepkg>
-maintainer="Simeon <simeon@local>"
+maintainer="Simeon Huang <hzwhuang@gmail.com>"
 pkgname=device-samsung-gtaba8
 pkgdesc="Samsung Galaxy Tab A8 10.5 (2021)"
 pkgver=1
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="
+	android-tools-avbtool
 	android-tools-mkbootimg
 	linux-samsung-gtaba8
 	postmarketos-base
 "
 makedepends="devicepkg-dev"
-source="deviceinfo"
+source="
+	deviceinfo
+	kernel-cmdline.conf
+	postprocess-bootimg.sh
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -22,8 +27,12 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+	install -Dm755 "$srcdir/postprocess-bootimg.sh" \
+		"$pkgdir/usr/share/mkinitfs/postprocess-bootimg.sh"
 }
 
 sha512sums="
-161917f96d928433e028714ff38b07ba16d366b5560daecef20a0b554a060fba35fb46daaaa8e85738346936c9f0815437eced24951384e8c11f0549a57a5845  deviceinfo
+1bbf718856afecac2553a4ba73404a8ca200d69704204cdfef8f8cb92561a47440bb6388dcd3ddd055172bd10ef534f41df5e8586fc5b84f85b0626c586269f2  deviceinfo
+2ba25964c1d0c97238573b8d63f163127b8a93821b61f7018241e62e611d8e32b2e1e4be47de78ad7fb743bce5a42c388dedd08ec0607d0b925e9697053d2d48  kernel-cmdline.conf
+4208224c2c2b362212333fc16292de99f92920e4f2626547b5048c23ec2282bf5eaab5a68db5b5a82e48dcb587c70e89b2bcc5bf7f9dee34153910e72e0c25e4  postprocess-bootimg.sh
 "
