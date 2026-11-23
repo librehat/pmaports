@@ -11,6 +11,7 @@ deviceinfo_arch="aarch64"
 
 # Device related
 deviceinfo_chassis="tablet"
+deviceinfo_drm="true"
 deviceinfo_screen_width="1200"
 deviceinfo_screen_height="1920"
 deviceinfo_usb_network_function="rndis.usb0"

@@ -3,7 +3,7 @@ maintainer="Simeon Huang <hzwhuang@gmail.com>"
 pkgname=device-samsung-gtaba8
 pkgdesc="Samsung Galaxy Tab A8 10.5 (2021)"
 pkgver=1
-pkgrel=1
+pkgrel=3
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -12,13 +12,17 @@ depends="
 	android-tools-avbtool
 	android-tools-mkbootimg
 	linux-samsung-gtaba8
+	mesa-dri-gallium
 	postmarketos-base
 "
 makedepends="devicepkg-dev"
+subpackages="$pkgname-kwin"
 source="
 	deviceinfo
 	kernel-cmdline.conf
 	postprocess-bootimg.sh
+	50-samsung-gtaba8-kwin.conf
+	kwin.sh
 "
 
 build() {
@@ -31,8 +35,18 @@ package() {
 		"$pkgdir/usr/share/mkinitfs/postprocess-bootimg.sh"
 }
 
+kwin() {
+	install_if="$pkgname kwin"
+	install -Dm644 "$srcdir/50-samsung-gtaba8-kwin.conf" \
+		"$subpkgdir/etc/environment.d/50-samsung-gtaba8-kwin.conf"
+	install -Dm644 "$srcdir/kwin.sh" \
+		"$subpkgdir/etc/profile.d/kwin.sh"
+}
+
 sha512sums="
-1bbf718856afecac2553a4ba73404a8ca200d69704204cdfef8f8cb92561a47440bb6388dcd3ddd055172bd10ef534f41df5e8586fc5b84f85b0626c586269f2  deviceinfo
+f59622e5bab38a36569987b02436b1e70cda8e100770f95359323931f666d8a93003951db2e597db68b167a26027ae29b97bc54807d0f7fe26e2ed721a4ab1da  deviceinfo
 2ba25964c1d0c97238573b8d63f163127b8a93821b61f7018241e62e611d8e32b2e1e4be47de78ad7fb743bce5a42c388dedd08ec0607d0b925e9697053d2d48  kernel-cmdline.conf
 4208224c2c2b362212333fc16292de99f92920e4f2626547b5048c23ec2282bf5eaab5a68db5b5a82e48dcb587c70e89b2bcc5bf7f9dee34153910e72e0c25e4  postprocess-bootimg.sh
+d7de31bd4e8e84a7286790f957af9a52fbd0a74369f57ddd23e63063523e56f1e5da08d5df2444bb80772bc93533b0dce29984dcab3ca01ebb435b6294d6e4a2  50-samsung-gtaba8-kwin.conf
+8ff25f635794725391cfd2b6f8426250d71eac6332e0ac69ff2a711d544e6522e3260158e0eecf68006c559e0d65124a3e4c8dfbb026b72081399f4cb3d58400  kwin.sh
 "
