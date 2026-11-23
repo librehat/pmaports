@@ -3,7 +3,7 @@ maintainer="Simeon Huang <hzwhuang@gmail.com>"
 _flavor="samsung-gtaba8"
 pkgname=linux-$_flavor
 pkgver=7.3.0
-pkgrel=0
+pkgrel=4
 pkgdesc="Linux mainline v7.3 kernel for Samsung Galaxy Tab A8 10.5 (2021)"
 arch="aarch64"
 _carch="arm64"
@@ -34,7 +34,7 @@ makedepends="
 	zstd
 "
 
-_commit="8afc29f500af71882b63ab585a00fec56ad72db1"
+_commit="df6b1418d11686e8e8658dab30553074dc5755e5"
 _config="config-$_flavor.$arch"
 
 builddir="$srcdir/linux-$_commit"
@@ -46,7 +46,7 @@ source="
 
 prepare() {
 	default_prepare
-	if [ -d /mnt/pmbootstrap/source-override ]; then
+	if [ -f /mnt/pmbootstrap/source-override/kernel/time/timeconst.bc ]; then
 		# pmbootstrap --src uses rsync --exclude-from=.gitignore, which ignores
 		# git's '!' negation (!kernel/time/timeconst.bc vs *.bc) and copies
 		# host-built glibc helpers from subdirectory .gitignore paths.
@@ -136,7 +136,7 @@ open(p, "wb").write(hdr + ent + dtb)
 }
 
 sha512sums="
-d543e3f031fec710b8d18f074e97a6a4f4db8b746cb750573d43d79caf507c7e6b6f797dbb43ff56c44205761028df67b3daf1e1712ba277b0fc13be9db62ea7  linux-samsung-gtaba8-8afc29f500af71882b63ab585a00fec56ad72db1.tar.gz
-8be8001afcbb7d6f76f4fd7d7f980702b638ad820988b652c0f3c6f7d3019d5fcbc1613dc14af66e6e00130fdb70c7e59bc96d9dce7fb2cc018887f26bf47ac1  config-samsung-gtaba8.aarch64
+29d6d79e2c1fceaf9a6058e3294b1ef108ebc947aecc12b6210b5fec69ac9f2cd00cd3c676f421dba113d46c812aeb6a98b300d8f643d05038462384f40452a3  linux-samsung-gtaba8-df6b1418d11686e8e8658dab30553074dc5755e5.tar.gz
+53055c18461d00b22f56ebd590f41d31fae69a1216c5bc35ddcfcb3a14618c8c38b8e0c56e4717b03a3f66705238724316d79bddeeba793c1c526633aad28201  config-samsung-gtaba8.aarch64
 0d49a81856db19dec6182a37dd3fbbda92b9769a27ce02b1af7f44c990c29ca8d4057ee7e57d2ed7197d9c8cdfe483d1f9835ed556151f1ffc2bd6ebc0182666  reloc.S
 "
