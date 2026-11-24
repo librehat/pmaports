@@ -2,8 +2,8 @@
 maintainer="Simeon Huang <hzwhuang@gmail.com>"
 pkgname=firmware-samsung-gtaba8
 pkgver=1
-pkgrel=0
-pkgdesc="Wireless (UWE5622) firmware for Samsung Galaxy Tab A8 (SM-X200/SM-X205)"
+pkgrel=1
+pkgdesc="Wireless (UWE5622) and touchscreen (Novatek) firmware for Samsung Galaxy Tab A8 (SM-X200/SM-X205)"
 url="https://github.com/librehat/gta8-sm-x200-linux"
 arch="aarch64"
 license="proprietary"
@@ -13,13 +13,18 @@ source=""
 sha512sums=""
 
 package() {
-	if [ ! -f "$builddir/wcnmodem.bin" ]; then
-		error "Missing $builddir/wcnmodem.bin"
+	local wcn_dir="$builddir"
+	if [ -d "$builddir/uwe5622" ]; then
+		wcn_dir="$builddir/uwe5622"
+	fi
+
+	if [ ! -f "$wcn_dir/wcnmodem.bin" ]; then
+		error "Missing $wcn_dir/wcnmodem.bin"
 		error "Build with: pmbootstrap build $pkgname --src=/path/to/firmware/uwe5622 --force"
 		return 1
 	fi
 
-	install -Dm644 "$builddir/wcnmodem.bin" \
+	install -Dm644 "$wcn_dir/wcnmodem.bin" \
 		"$pkgdir/usr/lib/firmware/uwe5622/wcnmodem.bin"
 
 	local f
@@ -29,9 +34,25 @@ package() {
 		bt_configure_pskey_aa.ini \
 		bt_configure_rf.ini \
 		bt_configure_rf_aa.ini; do
-		if [ -f "$builddir/$f" ]; then
-			install -Dm644 "$builddir/$f" \
+		if [ -f "$wcn_dir/$f" ]; then
+			install -Dm644 "$wcn_dir/$f" \
 				"$pkgdir/usr/lib/firmware/uwe5622/$f"
 		fi
+	done
+
+	local ts_found=0
+	local ts_dir
+	for ts_dir in "$builddir/touchscreen" "$builddir"; do
+		for f in "$ts_dir"/nt36523b*.bin; do
+			[ -f "$f" ] || continue
+			local bname="${f##*/}"
+			install -Dm644 "$f" \
+				"$pkgdir/usr/lib/firmware/$bname"
+			mkdir -p "$pkgdir/usr/share/mkinitfs/files"
+			printf '/usr/lib/firmware/%s\n' "$bname" >> \
+				"$pkgdir/usr/share/mkinitfs/files/30-initramfs-$pkgname.files"
+			ts_found=1
+		done
+		[ "$ts_found" = 1 ] && break
 	done
 }
