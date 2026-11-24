@@ -1,0 +1,37 @@
+# Reference: <https://postmarketos.org/firmware>
+maintainer="Simeon Huang <hzwhuang@gmail.com>"
+pkgname=firmware-samsung-gtaba8
+pkgver=1
+pkgrel=0
+pkgdesc="Wireless (UWE5622) firmware for Samsung Galaxy Tab A8 (SM-X200/SM-X205)"
+url="https://github.com/librehat/gta8-sm-x200-linux"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck !spdx !tracedeps pmb:cross-native"
+builddir="$srcdir/$pkgname"
+source=""
+sha512sums=""
+
+package() {
+	if [ ! -f "$builddir/wcnmodem.bin" ]; then
+		error "Missing $builddir/wcnmodem.bin"
+		error "Build with: pmbootstrap build $pkgname --src=/path/to/firmware/uwe5622 --force"
+		return 1
+	fi
+
+	install -Dm644 "$builddir/wcnmodem.bin" \
+		"$pkgdir/usr/lib/firmware/uwe5622/wcnmodem.bin"
+
+	local f
+	for f in \
+		wifi_board_config.ini \
+		bt_configure_pskey.ini \
+		bt_configure_pskey_aa.ini \
+		bt_configure_rf.ini \
+		bt_configure_rf_aa.ini; do
+		if [ -f "$builddir/$f" ]; then
+			install -Dm644 "$builddir/$f" \
+				"$pkgdir/usr/lib/firmware/uwe5622/$f"
+		fi
+	done
+}
