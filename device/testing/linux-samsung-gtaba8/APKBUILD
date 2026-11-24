@@ -50,13 +50,22 @@ prepare() {
 		# pmbootstrap --src uses rsync --exclude-from=.gitignore, which ignores
 		# git's '!' negation (!kernel/time/timeconst.bc vs *.bc) and copies
 		# host-built glibc helpers from subdirectory .gitignore paths.
-		cp -a /mnt/pmbootstrap/source-override/kernel/time/timeconst.bc \
+		cp /mnt/pmbootstrap/source-override/kernel/time/timeconst.bc \
 			"$builddir/kernel/time/timeconst.bc"
 		rm -f \
+			"$builddir/arch/arm64/boot/Image" \
 			"$builddir/arch/arm64/kernel/pi/relacheck" \
+			"$builddir/arch/arm64/kernel/vdso/vdso.lds" \
+			"$builddir/arch/arm64/kernel/vdso/vdso.so" \
+			"$builddir/arch/arm64/kernel/vdso/vdso.so.dbg" \
+			"$builddir/arch/arm64/kernel/vmlinux.lds" \
 			"$builddir/certs/extract-cert" \
+			"$builddir/certs/signing_key.x509" \
+			"$builddir/certs/x509_certificate_list" \
 			"$builddir/drivers/tty/vt/conmakehash" \
 			"$builddir/drivers/video/logo/pnmtologo" \
+			"$builddir/init/utsversion-tmp.h" \
+			"$builddir/kernel/config_data" \
 			"$builddir/lib/crc/gen_crc32table" \
 			"$builddir/lib/crc/gen_crc64table" \
 			"$builddir/scripts/asn1_compiler" \
