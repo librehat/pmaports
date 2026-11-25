@@ -320,21 +320,19 @@ static void patch_pskey(uint8_t pskey[PSKEY_SIZE])
 	}
 }
 
-static const char *find_firmware_file(const char *rel)
+static void find_firmware_file(const char *rel, char *out, size_t out_sz)
 {
-	static char candidates[2][256];
 	static const char * const prefixes[] = {
 		"/usr/lib/firmware",
 		"/lib/firmware",
 	};
 
 	for (size_t i = 0; i < 2; i++) {
-		snprintf(candidates[i], sizeof(candidates[i]), "%s/%s",
-			 prefixes[i], rel);
-		if (access(candidates[i], R_OK) == 0)
-			return candidates[i];
+		snprintf(out, out_sz, "%s/%s", prefixes[i], rel);
+		if (access(out, R_OK) == 0)
+			return;
 	}
-	return candidates[0];
+	snprintf(out, out_sz, "%s/%s", prefixes[0], rel);
 }
 
 static int unblock_bt_rfkill(void)
@@ -553,8 +551,8 @@ static int run_dry_run(const char *pskey_path, const char *rf_path)
 int main(int argc, char **argv)
 {
 	const char *tty_dev = "/dev/ttyBT0";
-	const char *pskey_path;
-	const char *rf_path;
+	char pskey_path[256];
+	char rf_path[256];
 	uint8_t pskey[PSKEY_SIZE];
 	uint8_t rf[RF_SIZE];
 	static const uint8_t enable_dual[3] = { 0x00, 0x00, 0x01 };
@@ -575,8 +573,10 @@ int main(int argc, char **argv)
 	if (argc >= 2)
 		tty_dev = argv[1];
 
-	pskey_path = find_firmware_file("uwe5622/bt_configure_pskey.ini");
-	rf_path = find_firmware_file("uwe5622/bt_configure_rf.ini");
+	find_firmware_file("uwe5622/bt_configure_pskey.ini",
+			   pskey_path, sizeof(pskey_path));
+	find_firmware_file("uwe5622/bt_configure_rf.ini",
+			   rf_path, sizeof(rf_path));
 
 	if (parse_ini_blob(pskey_path, pskey_fields,
 			   sizeof(pskey_fields) / sizeof(pskey_fields[0]),
