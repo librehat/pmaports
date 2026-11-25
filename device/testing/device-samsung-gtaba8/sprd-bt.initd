@@ -1,0 +1,16 @@
+#!/sbin/openrc-run
+
+name="sprd-bt"
+description="Attach Unisoc UWE5622 Bluetooth HCI over /dev/ttyBT0"
+command="/usr/bin/sprd-bt-attach"
+command_args="/dev/ttyBT0"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/var/log/${RC_SVCNAME}.log"
+error_log="/var/log/${RC_SVCNAME}.log"
+
+depend()
+{
+	after modules udev
+	before bluetooth
+}
