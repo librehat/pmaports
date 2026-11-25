@@ -3,7 +3,7 @@ maintainer="Simeon Huang <hzwhuang@gmail.com>"
 _flavor="samsung-gtaba8"
 pkgname=linux-$_flavor
 pkgver=7.3.0
-pkgrel=8
+pkgrel=9
 pkgdesc="Linux mainline v7.3 kernel for Samsung Galaxy Tab A8 10.5 (2021)"
 arch="aarch64"
 _carch="arm64"
@@ -34,7 +34,7 @@ makedepends="
 	zstd
 "
 
-_commit="cfcde90256a30323316054455afff156b6c35eac"
+_commit="9f10030ba78234efb94b0132a1a15b176e794de2"
 _config="config-$_flavor.$arch"
 
 builddir="$srcdir/linux-$_commit"
