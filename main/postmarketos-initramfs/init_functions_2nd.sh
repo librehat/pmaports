@@ -44,6 +44,7 @@ setup_udev() {
 # parted is too big
 resize_root_partition() {
 	local partition
+	ROOT_PARTITION_RESIZED=""
 
 	find_root_partition partition
 
@@ -88,7 +89,9 @@ resize_root_partition() {
 	# Resize if needed
 	if has_unallocated_space "$check_dev"; then
 		echo "Resize root partition ($partition)"
-		parted -f -s "$resize_dev" resizepart "$partnum" 100%
+		if parted -f -s "$resize_dev" resizepart "$partnum" 100%; then
+			ROOT_PARTITION_RESIZED="y"
+		fi
 		partprobe
 	else
 		echo "Not resizing root partition ($partition): no free space left"
@@ -118,7 +121,11 @@ resize_root_filesystem() {
 
 	find_root_partition partition
 	touch /etc/mtab # see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=673323
-	check_filesystem "$partition"
+	if [ "$ROOT_PARTITION_RESIZED" = "y" ]; then
+		check_filesystem "$partition" "force"
+	else
+		check_filesystem "$partition"
+	fi
 	type="$(get_partition_type "$partition")"
 	case "$type" in
 		ext4)

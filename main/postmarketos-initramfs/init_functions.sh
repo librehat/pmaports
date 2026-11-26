@@ -542,19 +542,26 @@ get_mounted_filesystem_type() {
 }
 
 # $1: partition
+# $2: set to "force" to force a check (e.g. before resizing ext2/3/4)
 check_filesystem() {
 	local partition=""
+	local force=""
 	local status=""
 	local type=""
 
 	partition="$1"
+	force="$2"
 	type="$(get_partition_type "$partition")"
 	# btrfs check is not included in that list on purpose. it takes too much time
 	# (as in: multiple minutes) and gets even slower the more the partition is used
 	case "$type" in
 		ext*)
 			echo "Auto-repair and check 'ext' filesystem ($partition)"
-			e2fsck -p "$partition"
+			if [ "$force" = "force" ]; then
+				e2fsck -f -p "$partition"
+			else
+				e2fsck -p "$partition"
+			fi
 			if [ $? -ge 4 ]; then
 				status="fail"
 			fi
