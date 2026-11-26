@@ -18,13 +18,10 @@ options="
 makedepends="
 	bc
 	bison
-	clang
 	elfutils-dev
 	findutils
 	flex
 	linux-headers
-	lld
-	llvm
 	openssl-dev
 	pahole
 	perl
@@ -145,7 +142,7 @@ open(p, "wb").write(hdr + ent + dtb)
 }
 
 sha512sums="
-29d6d79e2c1fceaf9a6058e3294b1ef108ebc947aecc12b6210b5fec69ac9f2cd00cd3c676f421dba113d46c812aeb6a98b300d8f643d05038462384f40452a3  linux-samsung-gtaba8-d5abf6c28308935f5bdf99cec132cc0e9714bc3e.tar.gz
+a49bf67ac9cdf72a39e9e4231b808b13a5ff8521c33d0b08521a5de0ec75a8eecde7f33a375722a47a05d9aa21b75a131f38b173394b0e45c2032d6ba7367862  linux-samsung-gtaba8-bc17dfb208c8b8c5515a19525b60afc046fa15a9.tar.gz
 ffd8da5c92f9146a01e7d0d966e131d581ccb6e3429ef5b0d0c0abab734e8a0192e9ac5e3f6e17c7b6cac52c938f09806e9f3ef577a1b34a99eb9e314dae2c8d  config-samsung-gtaba8.aarch64
 0d49a81856db19dec6182a37dd3fbbda92b9769a27ce02b1af7f44c990c29ca8d4057ee7e57d2ed7197d9c8cdfe483d1f9835ed556151f1ffc2bd6ebc0182666  reloc.S
 "
