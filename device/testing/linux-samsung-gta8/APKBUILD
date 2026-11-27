@@ -2,8 +2,8 @@
 maintainer="Simeon Huang <hzwhuang@gmail.com>"
 _flavor="samsung-gta8"
 pkgname=linux-$_flavor
-pkgver=7.3.0
-pkgrel=16
+pkgver=7.3.6
+pkgrel=0
 pkgdesc="Linux mainline v7.3 kernel for Samsung Galaxy Tab A8 10.5 (2021)"
 arch="aarch64"
 _carch="arm64"
@@ -31,7 +31,7 @@ makedepends="
 	zstd
 "
 
-_commit="bc17dfb208c8b8c5515a19525b60afc046fa15a9"
+_commit="2b2d099ff428ecd7518468b9b373c05fdffe8352"
 _config="config-$_flavor.$arch"
 
 builddir="$srcdir/linux-$_commit"
@@ -142,7 +142,7 @@ open(p, "wb").write(hdr + ent + dtb)
 }
 
 sha512sums="
-a49bf67ac9cdf72a39e9e4231b808b13a5ff8521c33d0b08521a5de0ec75a8eecde7f33a375722a47a05d9aa21b75a131f38b173394b0e45c2032d6ba7367862  linux-samsung-gta8-bc17dfb208c8b8c5515a19525b60afc046fa15a9.tar.gz
-43bd109f9cac7d2c790bf3c13e28a4d07550c40fae198a5b74fa2125877209c42c465aba960253bff08c981d7bb6147f6a76430bc01a10efbd3ad0c1855b2390  config-samsung-gta8.aarch64
+acb439f8bc73678b11ce3c1045c19d51bb699b1f65ccb10a20f6330ac55aafe04d416377425b1ffaf7711df9b2a2047989c6ba4f6e5eea1c41ee448859934e4d  linux-samsung-gta8-2b2d099ff428ecd7518468b9b373c05fdffe8352.tar.gz
+432b4b8cc8f7cdbfcf812cfb71e0336768394067e05a8a324bad8d44b58e7dbcdcb3c18467bc93ce621e6834fe000a6806477a8491437d7cbceb8fa812d8f853  config-samsung-gta8.aarch64
 0d49a81856db19dec6182a37dd3fbbda92b9769a27ce02b1af7f44c990c29ca8d4057ee7e57d2ed7197d9c8cdfe483d1f9835ed556151f1ffc2bd6ebc0182666  reloc.S
 "
