@@ -1,6 +1,6 @@
 # Reference: <https://postmarketos.org/devicepkg>
 maintainer="Simeon Huang <hzwhuang@gmail.com>"
-pkgname=device-samsung-gtaba8
+pkgname=device-samsung-gta8
 pkgdesc="Samsung Galaxy Tab A8 10.5 (2021)"
 pkgver=1
 pkgrel=10
@@ -11,8 +11,8 @@ options="!check !archcheck !pmb:crossdirect"
 depends="
 	android-tools-avbtool
 	android-tools-mkbootimg
-	firmware-samsung-gtaba8
-	linux-samsung-gtaba8
+	firmware-samsung-gta8
+	linux-samsung-gta8
 	mesa-dri-gallium
 	postmarketos-base
 "
@@ -24,7 +24,7 @@ source="
 	postprocess-bootimg.sh
 	sprd-bt-attach.c
 	sprd-bt.service
-	80-device-samsung-gtaba8.preset
+	80-device-samsung-gta8.preset
 "
 
 build() {
@@ -42,15 +42,15 @@ package() {
 		"$pkgdir/usr/bin/sprd-bt-attach"
 	install -Dm644 "$srcdir/sprd-bt.service" \
 		"$pkgdir/usr/lib/systemd/system/sprd-bt.service"
-	install -Dm644 "$srcdir/80-device-samsung-gtaba8.preset" \
-		"$pkgdir/usr/lib/systemd/system-preset/80-device-samsung-gtaba8.preset"
+	install -Dm644 "$srcdir/80-device-samsung-gta8.preset" \
+		"$pkgdir/usr/lib/systemd/system-preset/80-device-samsung-gta8.preset"
 }
 
 sha512sums="
-f59622e5bab38a36569987b02436b1e70cda8e100770f95359323931f666d8a93003951db2e597db68b167a26027ae29b97bc54807d0f7fe26e2ed721a4ab1da  deviceinfo
+9806e1e6e40f2c0874c99e1e1c1da275957d69796949e03906746361c6baf2adfae9cfbc47a43be14b839b6b5eb42776c8db58ad3c033bf502d41fe25bb5e1d0  deviceinfo
 2ba25964c1d0c97238573b8d63f163127b8a93821b61f7018241e62e611d8e32b2e1e4be47de78ad7fb743bce5a42c388dedd08ec0607d0b925e9697053d2d48  kernel-cmdline.conf
 4208224c2c2b362212333fc16292de99f92920e4f2626547b5048c23ec2282bf5eaab5a68db5b5a82e48dcb587c70e89b2bcc5bf7f9dee34153910e72e0c25e4  postprocess-bootimg.sh
 f4acefed0ba302d2c4de5fdbe8dd113fe9239ae7434cdc97e76282e668249274da102b9309f4c7b0ef518e66d7b65a0885640f0788b5d4a56afe04ccbe0aef9b  sprd-bt-attach.c
 43100b8c33f9e468c1d63ac7b832bc308d901d7764699a7a7ccb0427fc1952bcb5451a198aa05193572636793f293242a309336fa6fc1a7b63e9f051f8cce90f  sprd-bt.service
-9864a878011fdfb837d38c50b0d1b8d67c231eb097dd06c78f97d5978e040615a1efddbf237d35b5179a438b9a88b3f71762de27ad4b6775e3e83018b0f1aab6  80-device-samsung-gtaba8.preset
+9864a878011fdfb837d38c50b0d1b8d67c231eb097dd06c78f97d5978e040615a1efddbf237d35b5179a438b9a88b3f71762de27ad4b6775e3e83018b0f1aab6  80-device-samsung-gta8.preset
 "

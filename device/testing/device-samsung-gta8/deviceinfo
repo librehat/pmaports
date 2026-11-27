@@ -4,9 +4,9 @@
 deviceinfo_format_version="0"
 deviceinfo_name="Samsung Galaxy Tab A8 10.5 (2021)"
 deviceinfo_manufacturer="Samsung"
-deviceinfo_codename="samsung-gtaba8"
+deviceinfo_codename="samsung-gta8"
 deviceinfo_year="2021"
-deviceinfo_dtb="sprd/ums512-samsung-gtaba8"
+deviceinfo_dtb="sprd/ums512-samsung-gta8"
 deviceinfo_arch="aarch64"
 
 # Device related

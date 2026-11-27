@@ -1,6 +1,6 @@
 # Reference: <https://postmarketos.org/firmware>
 maintainer="Simeon Huang <hzwhuang@gmail.com>"
-pkgname=firmware-samsung-gtaba8
+pkgname=firmware-samsung-gta8
 pkgver=1
 pkgrel=1
 pkgdesc="Wireless (UWE5622) and touchscreen (Novatek) firmware for Samsung Galaxy Tab A8 (SM-X200/SM-X205)"

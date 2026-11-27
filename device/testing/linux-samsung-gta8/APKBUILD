@@ -1,6 +1,6 @@
 # Reference: <https://postmarketos.org/vendorkernel>
 maintainer="Simeon Huang <hzwhuang@gmail.com>"
-_flavor="samsung-gtaba8"
+_flavor="samsung-gta8"
 pkgname=linux-$_flavor
 pkgver=7.3.0
 pkgrel=16
@@ -135,14 +135,14 @@ dtb = open(p, "rb").read()
 hdr = struct.pack(">8I", 0xd7b7ab1e, 64 + len(dtb), 32, 32, 1, 32, 2048, 0)
 ent = struct.pack(">8I", len(dtb), 64, 0, 0, 0, 0, 0, 0)
 open(p, "wb").write(hdr + ent + dtb)
-' "$pkgdir/boot/dtbs/sprd/ums512-samsung-gtaba8.dtb"
+' "$pkgdir/boot/dtbs/sprd/ums512-samsung-gta8.dtb"
 
 	install -D "$builddir"/include/config/kernel.release \
 		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
 }
 
 sha512sums="
-a49bf67ac9cdf72a39e9e4231b808b13a5ff8521c33d0b08521a5de0ec75a8eecde7f33a375722a47a05d9aa21b75a131f38b173394b0e45c2032d6ba7367862  linux-samsung-gtaba8-bc17dfb208c8b8c5515a19525b60afc046fa15a9.tar.gz
-43bd109f9cac7d2c790bf3c13e28a4d07550c40fae198a5b74fa2125877209c42c465aba960253bff08c981d7bb6147f6a76430bc01a10efbd3ad0c1855b2390  config-samsung-gtaba8.aarch64
+a49bf67ac9cdf72a39e9e4231b808b13a5ff8521c33d0b08521a5de0ec75a8eecde7f33a375722a47a05d9aa21b75a131f38b173394b0e45c2032d6ba7367862  linux-samsung-gta8-bc17dfb208c8b8c5515a19525b60afc046fa15a9.tar.gz
+43bd109f9cac7d2c790bf3c13e28a4d07550c40fae198a5b74fa2125877209c42c465aba960253bff08c981d7bb6147f6a76430bc01a10efbd3ad0c1855b2390  config-samsung-gta8.aarch64
 0d49a81856db19dec6182a37dd3fbbda92b9769a27ce02b1af7f44c990c29ca8d4057ee7e57d2ed7197d9c8cdfe483d1f9835ed556151f1ffc2bd6ebc0182666  reloc.S
 "
